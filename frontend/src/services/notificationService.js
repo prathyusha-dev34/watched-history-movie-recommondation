@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://127.0.0.1:8000";
+const API = "https://collect-dd4h.onrender.com";
 
 const getToken = () => localStorage.getItem("token");
 
