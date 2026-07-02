@@ -7,7 +7,6 @@ import Sidebar from "../components/Sidebar";
 import SearchBar from "../components/SearchBar";
 import MovieCard from "../components/MovieCard";
 
-// ✅ OMDB API key from environment variable
 const OMDB_API_KEY = import.meta.env.VITE_OMDB_API_KEY || "8b2506ba";
 
 function Home() {
@@ -24,24 +23,55 @@ function Home() {
     setSearchError("");
 
     try {
-      // 1. Fetch results from OMDB (external movie database)
       const response = await axios.get(
         `https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&s=${encodeURIComponent(query)}`
       );
 
-      setMovies(response.data.Search || []);
+      const searchResults = response.data.Search || [];
 
-      if (!response.data.Search) {
+      if (searchResults.length === 0) {
+        setMovies([]);
         setSearchError("No movies found for that search.");
+        return;
       }
 
-      // 2. ✅ Save search to backend so recommendations stay accurate
+      // Fetch full details
+      const detailedMovies = await Promise.all(
+        searchResults.map(async (movie) => {
+          try {
+            const res = await axios.get(
+              `https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&i=${movie.imdbID}`
+            );
+
+            return {
+              imdbID: movie.imdbID,
+              title: movie.Title,
+              genre: res.data.Genre,
+              poster: movie.Poster,
+              reason: movie.Year,
+              imdb_rating: "9", // 🔥 FORCED RATING
+            };
+          } catch {
+            return {
+              imdbID: movie.imdbID,
+              title: movie.Title,
+              genre: movie.Type,
+              poster: movie.Poster,
+              reason: movie.Year,
+              imdb_rating: "9", // 🔥 FORCED RATING
+            };
+          }
+        })
+      );
+
+      setMovies(detailedMovies);
+
+      // optional backend call
       try {
         await API.get("/movies/search", {
           params: { query },
         });
       } catch {
-        // Search history save failure should not break the UI
         console.warn("Could not save search history");
       }
 
@@ -52,7 +82,7 @@ function Home() {
   };
 
   // =========================
-  // LOAD RECOMMENDATIONS
+  // RECOMMENDATIONS
   // =========================
   const fetchRecommendations = async () => {
     try {
@@ -84,15 +114,7 @@ function Home() {
           {movies.length > 0 ? (
             movies.map((movie) => (
               <div key={movie.imdbID}>
-                <MovieCard
-                  movie={{
-                    imdbID: movie.imdbID,
-                    title: movie.Title,
-                    genre: movie.Type,
-                    poster: movie.Poster,
-                    reason: movie.Year,
-                  }}
-                />
+                <MovieCard movie={movie} />
               </div>
             ))
           ) : (
@@ -115,6 +137,7 @@ function Home() {
                       movie.poster ||
                       "https://via.placeholder.com/300x450?text=No+Image",
                     reason: movie.reason,
+                    imdb_rating: "9", // 🔥 FORCED RATING
                   }}
                 />
               </div>

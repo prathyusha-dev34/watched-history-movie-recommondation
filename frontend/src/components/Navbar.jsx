@@ -18,21 +18,37 @@ function Navbar() {
   useEffect(() => {
     loadCount();
 
-    // Refresh every 30 seconds
     const interval = setInterval(loadCount, 30000);
-
     return () => clearInterval(interval);
   }, []);
 
   return (
-
     <div className="navbar">
 
-      <div className="logo">
+      {/* LOGO */}
+      <div className="logo" onClick={() => navigate("/")}>
         Movie<span>Box</span>
       </div>
 
+      {/* NAV LINKS */}
+      <div className="nav-links">
+        <button onClick={() => navigate("/")} className="nav-btn">
+          Home
+        </button>
+
+        <button onClick={() => navigate("/watchlist")} className="nav-btn">
+          Watchlist
+        </button>
+
+        <button onClick={() => navigate("/watched")} className="nav-btn">
+          Watched History
+        </button>
+      </div>
+
+      {/* RIGHT SIDE */}
       <div className="nav-right">
+
+        {/* NOTIFICATIONS */}
         <button
           className="notification-btn"
           onClick={() => navigate("/notifications")}
@@ -43,21 +59,15 @@ function Navbar() {
           )}
         </button>
 
+        {/* PROFILE */}
         <div className="profile">
-
-          <img
-            src="https://i.pravatar.cc/40"
-            alt="profile"
-          />
-
+          <img src="https://i.pravatar.cc/40" alt="profile" />
           <span>John Doe</span>
-
         </div>
 
       </div>
 
     </div>
-    
   );
 }
 

@@ -1,17 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import false
 
 from app.database import Base, engine
-from app import models
 
-# Import models so SQLAlchemy creates the tables
+# =========================
+# MODELS (CREATE TABLES)
+# =========================
 from app.models.collection import Collection, CollectionMovie
 from app.models.notification import Notification
 from app.models.review_like import ReviewLike
+from app.models.watched import Watched
 
 # =========================
-# IMPORT ROUTES
+# ROUTES
 # =========================
 from app.routes import (
     auth,
@@ -25,16 +26,13 @@ from app.routes import (
     profile,
     collections,
     notification,
-    reviews,
+    watched
 )
 
-# =========================
-# IMPORT ADMIN ROUTER
-# =========================
 from app.routes.admin import router as admin_router
 
 # =========================
-# CREATE DATABASE TABLES
+# CREATE TABLES
 # =========================
 Base.metadata.create_all(bind=engine)
 
@@ -44,20 +42,21 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Movie Backend API")
 
 # =========================
-# CORS CONFIG
+# CORS CONFIG (FIXED)
 # =========================
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "*"
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
     ],
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # =========================
-# APPLICATION ROUTES
+# ROUTES INCLUDE
 # =========================
 app.include_router(auth.router)
 app.include_router(favorites.router)
@@ -70,8 +69,9 @@ app.include_router(reviews.router)
 app.include_router(profile.router)
 app.include_router(collections.router)
 app.include_router(notification.router)
+app.include_router(watched.router)
 
 # =========================
-# ADMIN ROUTES
+# ADMIN ROUTE
 # =========================
 app.include_router(admin_router)

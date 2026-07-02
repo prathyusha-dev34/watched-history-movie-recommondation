@@ -9,15 +9,22 @@ import {
 function MovieCard({ movie }) {
   const [collections, setCollections] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState("");
-  const { isMovieSelected, addMovieToCompare, removeMovieFromCompare } = useCompare();
+  const [watched, setWatched] = useState(false);
+
+  const { isMovieSelected, addMovieToCompare, removeMovieFromCompare } =
+    useCompare();
 
   const movieId = movie.imdbID || movie.movie_id || movie.title;
   const isSelected = isMovieSelected(movieId);
 
   useEffect(() => {
     loadCollections();
+    checkWatchedStatus();
   }, []);
 
+  // =========================
+  // LOAD COLLECTIONS
+  // =========================
   const loadCollections = async () => {
     try {
       const data = await getCollections();
@@ -27,7 +34,21 @@ function MovieCard({ movie }) {
     }
   };
 
+  // =========================
+  // CHECK WATCHED STATUS
+  // =========================
+  const checkWatchedStatus = async () => {
+    try {
+      const res = await API.get(`/watched/status/${movieId}`);
+      setWatched(res.data.watched);
+    } catch (error) {
+      console.error("Watched status error:", error);
+    }
+  };
+
+  // =========================
   // FAVORITES
+  // =========================
   const addToFavorites = async () => {
     try {
       const favoriteData = {
@@ -37,7 +58,6 @@ function MovieCard({ movie }) {
         poster: movie.poster,
       };
 
-      // ✅ Use shared API instance (no hardcoded URL, token auto-attached)
       const response = await API.post("/favorites/", favoriteData);
       alert(response.data.message || "Added to Favorites ❤️");
     } catch (error) {
@@ -46,7 +66,9 @@ function MovieCard({ movie }) {
     }
   };
 
+  // =========================
   // WATCHLIST
+  // =========================
   const addToWatchlist = async () => {
     try {
       const watchlistData = {
@@ -56,7 +78,6 @@ function MovieCard({ movie }) {
         poster: movie.poster,
       };
 
-      // ✅ Use shared API instance
       const response = await API.post("/watchlist/", watchlistData);
       alert(response.data.message || "Added to Watchlist 📺");
     } catch (error) {
@@ -65,7 +86,32 @@ function MovieCard({ movie }) {
     }
   };
 
-  // ADD REVIEW
+  // =========================
+  // MARK AS WATCHED (NEW)
+  // =========================
+  const markAsWatched = async () => {
+    try {
+      const payload = {
+        movie_id: movieId,
+        title: movie.title,
+        poster: movie.poster,
+        genre: movie.genre,
+        imdb_rating: movie.imdb_rating || "0",
+      };
+
+      const res = await API.post("/watched/", payload);
+
+      alert(res.data.message || "Marked as Watched ✅");
+      setWatched(true);
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.detail || "Failed to mark watched");
+    }
+  };
+
+  // =========================
+  // REVIEWS
+  // =========================
   const addReview = async () => {
     try {
       const reviewData = {
@@ -75,7 +121,6 @@ function MovieCard({ movie }) {
         review: "Excellent Movie ⭐",
       };
 
-      // ✅ Use shared API instance
       const response = await API.post("/reviews/", reviewData);
       alert(response.data.message || "Review Added ⭐");
     } catch (error) {
@@ -84,10 +129,8 @@ function MovieCard({ movie }) {
     }
   };
 
-  // VIEW REVIEWS
   const getReviews = async () => {
     try {
-      // ✅ Use shared API instance
       const response = await API.get(`/reviews/${movieId}`);
 
       if (response.data.reviews.length === 0) {
@@ -106,7 +149,9 @@ function MovieCard({ movie }) {
     }
   };
 
-  // ADD TO COLLECTION
+  // =========================
+  // COLLECTION
+  // =========================
   const addToCollection = async () => {
     if (!selectedCollection) {
       alert("Please select a collection");
@@ -127,6 +172,9 @@ function MovieCard({ movie }) {
     }
   };
 
+  // =========================
+  // COMPARE
+  // =========================
   const handleCompareToggle = () => {
     if (isSelected) {
       removeMovieFromCompare(movieId);
@@ -139,6 +187,9 @@ function MovieCard({ movie }) {
     }
   };
 
+  // =========================
+  // UI
+  // =========================
   return (
     <div className="movie-card">
       <img
@@ -155,14 +206,33 @@ function MovieCard({ movie }) {
         <p>{movie.genre}</p>
         <p>{movie.reason}</p>
 
+        {/* FAVORITE */}
         <button className="fav-btn" onClick={addToFavorites}>
           ❤️ Favorite
         </button>
 
+        {/* WATCHLIST */}
         <button className="watch-btn" onClick={addToWatchlist}>
           📺 Watchlist
         </button>
 
+        {/* ⭐ WATCHED FEATURE */}
+        <button
+          className="watch-btn"
+          onClick={markAsWatched}
+          disabled={watched}
+          style={{
+            background: watched ? "green" : "#333",
+            color: "white",
+            marginTop: "8px",
+            opacity: watched ? 0.8 : 1,
+            cursor: watched ? "not-allowed" : "pointer",
+          }}
+        >
+          {watched ? "✓ Watched" : "🎬 Mark as Watched"}
+        </button>
+
+        {/* REVIEW */}
         <button className="review-btn" onClick={addReview}>
           ⭐ Add Review
         </button>
@@ -171,6 +241,7 @@ function MovieCard({ movie }) {
           👁 View Reviews
         </button>
 
+        {/* COLLECTION */}
         <select
           value={selectedCollection}
           onChange={(e) => setSelectedCollection(e.target.value)}
@@ -187,6 +258,7 @@ function MovieCard({ movie }) {
           📁 Add to Collection
         </button>
 
+        {/* COMPARE */}
         <div className="compare-checkbox-container">
           <button
             className={`compare-toggle-btn ${isSelected ? "selected" : ""}`}

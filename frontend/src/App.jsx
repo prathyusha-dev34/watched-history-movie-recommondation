@@ -11,7 +11,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Favorites from "./pages/Favorites";
-import History from "./pages/History";
+import History from "./pages/History"; // (Search History)
+import Watched from "./pages/Watched"; // ⭐ NEW WATCHED PAGE
 import Profile from "./pages/Profile";
 import Watchlist from "./pages/Watchlist";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -70,12 +71,22 @@ function App() {
             }
           />
 
-          {/* History */}
+          {/* Search History */}
           <Route
             path="/history"
             element={
               <ProtectedRoute>
                 <History />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ⭐ WATCHED MOVIES */}
+          <Route
+            path="/watched"
+            element={
+              <ProtectedRoute>
+                <Watched />
               </ProtectedRoute>
             }
           />
@@ -150,15 +161,24 @@ function App() {
             }
           />
 
+          {/* Notifications */}
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <Notifications />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Redirect Unknown Routes */}
           <Route path="*" element={<Navigate to="/" replace />} />
 
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/notifications" element={<Notifications />} />
         </Routes>
 
         {/* Global floating comparison bar */}
         <CompareBar />
+
       </BrowserRouter>
     </CompareProvider>
   );
