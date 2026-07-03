@@ -15,23 +15,26 @@ function Login() {
     setLoading(true);
 
     try {
-      // Send as form data (required by OAuth2PasswordBearer)
-      const formData = new FormData();
-      formData.append("username", email);
-      formData.append("password", password);
+      // ✅ JSON request (FIXED)
+      const response = await API.post("/auth/login", {
+        username: email,
+        password: password,
+      });
 
-      // ✅ Use shared API instance (no hardcoded URL)
-      const response = await API.post("/auth/login", formData);
-
-      // Save token and user
+      // Save token
       localStorage.setItem("token", response.data.access_token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
 
-      // Redirect to main app
+      if (response.data.user) {
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+      }
+
+      // Redirect
       window.location.href = "/";
 
     } catch (err) {
-      const detail = err.response?.data?.detail || "Invalid credentials";
+      const detail =
+        err.response?.data?.detail || "Invalid credentials";
+
       setError(detail);
     } finally {
       setLoading(false);
@@ -44,7 +47,7 @@ function Login() {
         <h1>Login</h1>
 
         {error && (
-          <p style={{ color: "#e03333", fontSize: "14px", margin: 0, textAlign: "center" }}>
+          <p style={{ color: "#e03333", fontSize: "14px", textAlign: "center" }}>
             {error}
           </p>
         )}

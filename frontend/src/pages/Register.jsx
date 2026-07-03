@@ -16,19 +16,21 @@ function Register() {
     setLoading(true);
 
     try {
-      const formData = new FormData();
-      formData.append("username", name);
-      formData.append("email", email);
-      formData.append("password", password);
-
-      // ✅ Use shared API instance (no hardcoded URL)
-      await API.post("/auth/register", formData);
+      // ✅ JSON body (IMPORTANT FIX)
+      await API.post("/auth/register", {
+        username: name,
+        email: email,
+        password: password,
+      });
 
       alert("Registration Successful! Please log in.");
       window.location.href = "/login";
 
     } catch (err) {
-      const detail = err.response?.data?.detail || "Registration failed. Please try again.";
+      const detail =
+        err.response?.data?.detail ||
+        "Registration failed. Please try again.";
+
       setError(detail);
     } finally {
       setLoading(false);
@@ -41,7 +43,7 @@ function Register() {
         <h1>Register</h1>
 
         {error && (
-          <p style={{ color: "#e03333", fontSize: "14px", margin: 0, textAlign: "center" }}>
+          <p style={{ color: "#e03333", fontSize: "14px", textAlign: "center" }}>
             {error}
           </p>
         )}
