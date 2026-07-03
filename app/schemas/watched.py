@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
 
 
 # =========================
@@ -8,9 +9,9 @@ from datetime import datetime
 class WatchedCreate(BaseModel):
     movie_id: str
     title: str
-    poster: str | None = None
-    genre: str | None = None
-    imdb_rating: str | None = None
+    poster: Optional[str] = None
+    genre: Optional[str] = None
+    imdb_rating: Optional[float] = None
 
 
 # =========================
@@ -20,10 +21,10 @@ class WatchedOut(BaseModel):
     id: int
     movie_id: str
     title: str
-    poster: str | None = None
-    genre: str | None = None
-    imdb_rating: str | None = None
-    Watched_date: datetime
+    poster: Optional[str] = None
+    genre: Optional[str] = None
+    imdb_rating: Optional[float] = None
+    watched_date: datetime
 
     class Config:
         from_attributes = True

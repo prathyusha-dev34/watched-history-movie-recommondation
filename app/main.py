@@ -1,20 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
 
 from app.database import Base, engine
 
-# =========================
-# MODELS (CREATE TABLES)
-# =========================
+# MODELS
 from app.models.collection import Collection, CollectionMovie
 from app.models.notification import Notification
 from app.models.review_like import ReviewLike
-from app.models.Watched import Watched
+from app.models.watched import Watched
 
-# =========================
-# ROUTES
-# =========================
+# ROUTES (normal ones)
 from app.routes import (
     auth,
     favorites,
@@ -26,32 +21,18 @@ from app.routes import (
     reviews,
     profile,
     collections,
-    notification,
-    Watched
+    notification
 )
 
-from app.routes.admin import router as admin_router
+# ⭐ IMPORTANT: watched FIX
+from app.routes.watched import router as watched_router
 
-# =========================
-# CREATE TABLES
-# =========================
-Base.metadata.create_all(bind=engine)
 
-# =========================
-# FASTAPI APP
-# =========================
 app = FastAPI(title="Movie Backend API")
 
-# =========================
-# ROOT ROUTE (Redirect to Swagger Docs)
-# =========================
-@app.get("/", include_in_schema=False)
-def root():
-    return RedirectResponse(url="/docs")
+Base.metadata.create_all(bind=engine)
 
-# =========================
-# CORS CONFIG
-# =========================
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -63,9 +44,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# =========================
-# ROUTES INCLUDE
-# =========================
+# ROUTES
 app.include_router(auth.router)
 app.include_router(favorites.router)
 app.include_router(history.router)
@@ -77,9 +56,6 @@ app.include_router(reviews.router)
 app.include_router(profile.router)
 app.include_router(collections.router)
 app.include_router(notification.router)
-app.include_router(watched.router)
 
-# =========================
-# ADMIN ROUTE
-# =========================
-app.include_router(admin_router)
+# ⭐ FIXED WATCHED ROUTE
+app.include_router(watched_router)
