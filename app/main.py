@@ -10,7 +10,7 @@ from app.database import Base, engine
 from app.models.collection import Collection, CollectionMovie
 from app.models.notification import Notification
 from app.models.review_like import ReviewLike
-from app.models.watched import Watched
+from app.models.Watched import Watched
 
 # =========================
 # ROUTES
@@ -27,7 +27,7 @@ from app.routes import (
     profile,
     collections,
     notification,
-    watched
+    Watched
 )
 
 from app.routes.admin import router as admin_router

@@ -23,7 +23,7 @@ class WatchedOut(BaseModel):
     poster: str | None = None
     genre: str | None = None
     imdb_rating: str | None = None
-    watched_date: datetime
+    Watched_date: datetime
 
     class Config:
         from_attributes = True

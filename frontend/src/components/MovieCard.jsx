@@ -9,7 +9,7 @@ import {
 function MovieCard({ movie }) {
   const [collections, setCollections] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState("");
-  const [watched, setWatched] = useState(false);
+  const [Watched, setWatched] = useState(false);
 
   const { isMovieSelected, addMovieToCompare, removeMovieFromCompare } =
     useCompare();
@@ -39,8 +39,8 @@ function MovieCard({ movie }) {
   // =========================
   const checkWatchedStatus = async () => {
     try {
-      const res = await API.get(`/watched/status/${movieId}`);
-      setWatched(res.data.watched);
+      const res = await API.get(`/Watched/status/${movieId}`);
+      setWatched(res.data.Watched);
     } catch (error) {
       console.error("Watched status error:", error);
     }

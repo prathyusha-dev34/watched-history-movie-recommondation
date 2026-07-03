@@ -4,7 +4,7 @@ from app.database import Base
 
 
 class Watched(Base):
-    __tablename__ = "watched"
+    __tablename__ = "Watched"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
@@ -16,4 +16,4 @@ class Watched(Base):
     genre = Column(String)
     imdb_rating = Column(String)
 
-    watched_date = Column(DateTime, default=datetime.utcnow)
+    Watched_date = Column(DateTime, default=datetime.utcnow)
