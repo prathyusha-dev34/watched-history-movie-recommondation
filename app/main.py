@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 
 from app.database import Base, engine
 
@@ -27,25 +28,40 @@ from app.routes import (
 # WATCHED ROUTE
 from app.routes.watched import router as watched_router
 
+
 app = FastAPI(title="Movie Backend API")
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
 
+
+# =========================
+# ROOT REDIRECT (/ -> /docs)
+# =========================
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse(url="/docs")
+
+
+# =========================
 # CORS
+# =========================
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
-        "https://YOUR-VERCEL-APP.vercel.app",  # Replace with your Vercel URL
+        "https://YOUR-VERCEL-APP.vercel.app",  # replace with real Vercel URL
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include routers
+
+# =========================
+# ROUTES
+# =========================
 app.include_router(auth.router)
 app.include_router(favorites.router)
 app.include_router(history.router)
