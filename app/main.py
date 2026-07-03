@@ -7,9 +7,9 @@ from app.database import Base, engine
 from app.models.collection import Collection, CollectionMovie
 from app.models.notification import Notification
 from app.models.review_like import ReviewLike
-from app.models.watched import watched
+from app.models.watched import Watched
 
-# ROUTES (normal ones)
+# ROUTES
 from app.routes import (
     auth,
     favorites,
@@ -21,15 +21,15 @@ from app.routes import (
     reviews,
     profile,
     collections,
-    notification
+    notification,
 )
 
-# ⭐ IMPORTANT: watched FIX
+# WATCHED ROUTE
 from app.routes.watched import router as watched_router
-
 
 app = FastAPI(title="Movie Backend API")
 
+# Create database tables
 Base.metadata.create_all(bind=engine)
 
 # CORS
@@ -37,14 +37,15 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "http://127.0.0.1:5173"
+        "http://127.0.0.1:5173",
+        "https://YOUR-VERCEL-APP.vercel.app",  # Replace with your Vercel URL
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ROUTES
+# Include routers
 app.include_router(auth.router)
 app.include_router(favorites.router)
 app.include_router(history.router)
@@ -56,6 +57,4 @@ app.include_router(reviews.router)
 app.include_router(profile.router)
 app.include_router(collections.router)
 app.include_router(notification.router)
-
-# ⭐ FIXED WATCHED ROUTE
 app.include_router(watched_router)
