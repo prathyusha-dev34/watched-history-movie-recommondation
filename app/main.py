@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 
 from app.database import Base, engine
 
@@ -42,7 +43,14 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Movie Backend API")
 
 # =========================
-# CORS CONFIG (FIXED)
+# ROOT ROUTE (Redirect to Swagger Docs)
+# =========================
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse(url="/docs")
+
+# =========================
+# CORS CONFIG
 # =========================
 app.add_middleware(
     CORSMiddleware,
