@@ -7,7 +7,7 @@ from app.database import Base, engine
 from app.models.collection import Collection, CollectionMovie
 from app.models.notification import Notification
 from app.models.review_like import ReviewLike
-from app.models.watched import Watched
+from app.models.watched import watched
 
 # ROUTES (normal ones)
 from app.routes import (

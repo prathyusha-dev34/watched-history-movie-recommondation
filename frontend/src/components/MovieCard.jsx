@@ -9,7 +9,7 @@ import {
 function MovieCard({ movie }) {
   const [collections, setCollections] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState("");
-  const [Watched, setWatched] = useState(false);
+  const [watched, setWatched] = useState(false);
 
   const { isMovieSelected, addMovieToCompare, removeMovieFromCompare } =
     useCompare();
@@ -39,8 +39,8 @@ function MovieCard({ movie }) {
   // =========================
   const checkWatchedStatus = async () => {
     try {
-      const res = await API.get(`/Watched/status/${movieId}`);
-      setWatched(res.data.Watched);
+      const res = await API.get(`/watched/status/${movieId}`);
+      setWatched(res.data.watched);
     } catch (error) {
       console.error("Watched status error:", error);
     }
@@ -87,7 +87,7 @@ function MovieCard({ movie }) {
   };
 
   // =========================
-  // MARK AS WATCHED (NEW)
+  // MARK AS WATCHED
   // =========================
   const markAsWatched = async () => {
     try {
@@ -216,7 +216,7 @@ function MovieCard({ movie }) {
           📺 Watchlist
         </button>
 
-        {/* ⭐ WATCHED FEATURE */}
+        {/* WATCHED */}
         <button
           className="watch-btn"
           onClick={markAsWatched}
@@ -259,14 +259,12 @@ function MovieCard({ movie }) {
         </button>
 
         {/* COMPARE */}
-        <div className="compare-checkbox-container">
-          <button
-            className={`compare-toggle-btn ${isSelected ? "selected" : ""}`}
-            onClick={handleCompareToggle}
-          >
-            {isSelected ? "✓ Comparing" : "＋ Compare"}
-          </button>
-        </div>
+        <button
+          className={`compare-toggle-btn ${isSelected ? "selected" : ""}`}
+          onClick={handleCompareToggle}
+        >
+          {isSelected ? "✓ Comparing" : "＋ Compare"}
+        </button>
       </div>
     </div>
   );
