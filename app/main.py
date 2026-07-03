@@ -25,18 +25,14 @@ from app.routes import (
     notification,
 )
 
-# WATCHED ROUTE
 from app.routes.watched import router as watched_router
-
 
 app = FastAPI(title="Movie Backend API")
 
-# Create database tables
 Base.metadata.create_all(bind=engine)
 
-
 # =========================
-# ROOT REDIRECT (/ -> /docs)
+# ROOT REDIRECT
 # =========================
 @app.get("/", include_in_schema=False)
 def root():
@@ -44,20 +40,19 @@ def root():
 
 
 # =========================
-# CORS
+# CORS FIX
 # =========================
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
-        "https://YOUR-VERCEL-APP.vercel.app",  # replace with real Vercel URL
+        "https://watched-history-movie-recommondatio-rho.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # =========================
 # ROUTES
